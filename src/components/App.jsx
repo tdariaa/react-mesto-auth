@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Header from './Header.jsx';
 import Main from './Main.jsx';
 import Footer from './Footer.jsx';
@@ -11,6 +12,12 @@ import AddPlacePopup from './AddPlacePopup .jsx'
 import DeleteWarningPopup from './DeleteWarningPopup.jsx';
 import '../App.css';
 
+
+import SignUp from './SignUp.jsx'
+
+
+
+
 function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
@@ -21,6 +28,12 @@ function App() {
   const [selectedCardId, setSelectedCardId] = React.useState('');
   const [currentUser, setCurrentUser] = React.useState({});
   const [cards, setCards] = React.useState([]);
+
+
+  const [loggedIn, setLoggedIn] = React.useState(false);
+
+
+
 
   React.useEffect(() => {
     api.getAllNeededData()
@@ -118,22 +131,48 @@ function App() {
   }
 
   return (
+
+
+
+
+
+
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-
         <Header />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={loggedIn ? <Navigate to="/main" replace /> : <Navigate to="/sign-up" replace />} />
+            <Route path="/sign-up" element={
+              <>
+                
+                <SignUp />
+              </>
+            } />
 
-        <Main
-          onEditProfile={handleEditProfileClick}
-          onAddPlace={handleAddPlaceClick}
-          onEditAvatar={handleEditAvatarClick}
-          onCardDelete={handleDeleteClick}
-          onCardClick={handleCardClick}
-          onCardLike={handleCardLike}
-          cards={cards}
-        />
 
-        <Footer />
+            <Route path="/main" element={
+              <>
+                <Main
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onEditAvatar={handleEditAvatarClick}
+                  onCardDelete={handleDeleteClick}
+                  onCardClick={handleCardClick}
+                  onCardLike={handleCardLike}
+                  cards={cards}
+                />
+                <Footer />
+              </>
+            } />
+
+          </Routes>
+        </BrowserRouter >
+
+
+
+
+
 
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
@@ -167,6 +206,12 @@ function App() {
 
       </div>
     </CurrentUserContext.Provider>
+
+
+
+
+
+
   );
 }
 
