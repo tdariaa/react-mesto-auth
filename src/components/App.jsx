@@ -13,7 +13,8 @@ import DeleteWarningPopup from './DeleteWarningPopup.jsx';
 import '../App.css';
 
 
-import SignUp from './SignUp.jsx'
+import SignUp from './SignUp.jsx';
+import LogIn from './LogIn.jsx';
 
 
 
@@ -142,11 +143,15 @@ function App() {
         <Header />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={loggedIn ? <Navigate to="/main" replace /> : <Navigate to="/sign-up" replace />} />
-            <Route path="/sign-up" element={
+            <Route path="/" element={loggedIn ? <Navigate to="/main" replace /> : <Navigate to="/signup" replace />} />
+            <Route path="/signup" element={
               <>
-                
                 <SignUp />
+              </>
+            } />
+            <Route path="/login" element={
+              <>
+                <LogIn />
               </>
             } />
 
