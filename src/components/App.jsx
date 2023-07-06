@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate, useNavigate} from 'react-router-dom';
 import Header from './Header.jsx';
 import Main from './Main.jsx';
 import Footer from './Footer.jsx';
@@ -13,8 +13,12 @@ import DeleteWarningPopup from './DeleteWarningPopup.jsx';
 import '../App.css';
 
 
-import SignUp from './SignUp.jsx';
+import Register from './Register.jsx';
 import LogIn from './LogIn.jsx';
+import ProtectedRouteElement from './ProtectedRoute.jsx';
+import InfoTooltip from './InfoTooltip.jsx';
+import * as auth from './auth.jsx';
+
 
 
 
@@ -32,6 +36,8 @@ function App() {
 
 
   const [loggedIn, setLoggedIn] = React.useState(false);
+  const [isInfoTooltipOpen, setInfoTooltipOpen] = React.useState(false);
+  const [isRegistrationSuccess, setRegistrationSuccess] = React.useState(false);
 
 
 
@@ -54,6 +60,8 @@ function App() {
     setEditProfilePopupOpen(false);
     setPopupWithImageOpen(false);
     setDeletePopupOpen(false);
+
+    setInfoTooltipOpen(false);
   }
 
   function handleEditAvatarClick() {
@@ -131,6 +139,43 @@ function App() {
       })
   }
 
+
+
+
+
+
+  
+  function handleRegistration() {
+    setInfoTooltipOpen(true);
+  }
+  function handleRegisterSubmit(password, email) {
+    auth.register(password, email)
+      .then((response) => {
+        console.log(response.ok);
+        setRegistrationSuccess(response.ok);
+        return response.json();
+      })
+      .then((res) => {
+        console.log(res);
+        handleRegistration();
+        return res;
+      })
+      .catch(function (value) {
+        setRegistrationSuccess(false);
+        console.log('Ошибка:' + value);
+      })
+  }
+
+
+
+  function handleLogin() {
+    setLoggedIn(true);
+  }
+
+
+
+
+
   return (
 
 
@@ -140,23 +185,29 @@ function App() {
 
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header />
         <BrowserRouter>
+
+          <Header />
+
           <Routes>
             <Route path="/" element={loggedIn ? <Navigate to="/main" replace /> : <Navigate to="/signup" replace />} />
-            <Route path="/signup" element={
-              <>
-                <SignUp />
-              </>
-            } />
-            <Route path="/login" element={
-              <>
-                <LogIn />
-              </>
-            } />
-
+            <Route path="/signup" element={<Register onRegistration={handleRegisterSubmit} />} />
+            <Route path="/login" element={<LogIn handleLogin={handleLogin} />} />
 
             <Route path="/main" element={
+              <ProtectedRouteElement element={Main} loggedIn={loggedIn}
+                onEditProfile={handleEditProfileClick}
+                onAddPlace={handleAddPlaceClick}
+                onEditAvatar={handleEditAvatarClick}
+                onCardDelete={handleDeleteClick}
+                onCardClick={handleCardClick}
+                onCardLike={handleCardLike}
+                cards={cards} />
+
+            } />
+
+
+            {/* <Route path="/main" element={
               <>
                 <Main
                   onEditProfile={handleEditProfileClick}
@@ -167,17 +218,15 @@ function App() {
                   onCardLike={handleCardLike}
                   cards={cards}
                 />
-                <Footer />
+
               </>
-            } />
+            } /> */}
 
           </Routes>
+
+          {loggedIn && <Footer />}
+
         </BrowserRouter >
-
-
-
-
-
 
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
@@ -207,6 +256,13 @@ function App() {
           card={selectedCard}
           isOpen={isPopupWithImageOpen}
           onClose={closeAllPopup}
+        />
+
+        <InfoTooltip
+          isOpen={isInfoTooltipOpen}
+          isSuccess={isRegistrationSuccess}
+          onClose={closeAllPopup}
+          onRegistration={handleRegistration}
         />
 
       </div>

@@ -2,12 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 function Authentication(props) {
-
+    console.log(props);
     return (
         <>
             <div className="auth">
                 <h1 className="auth__title">{props.title}</h1>
-                <form className="auth__form">
+                <form className="auth__form" onSubmit={props.onSubmit}>
 
                     {props.children}
                     <button className="auth__button">{props.buttonTitle}</button>
