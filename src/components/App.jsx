@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes, Navigate, useNavigate} from 'react-router-dom';
+import { Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import Header from './Header.jsx';
 import Main from './Main.jsx';
 import Footer from './Footer.jsx';
@@ -12,18 +12,14 @@ import AddPlacePopup from './AddPlacePopup .jsx'
 import DeleteWarningPopup from './DeleteWarningPopup.jsx';
 import '../App.css';
 
-
 import Register from './Register.jsx';
 import LogIn from './LogIn.jsx';
 import ProtectedRouteElement from './ProtectedRoute.jsx';
 import InfoTooltip from './InfoTooltip.jsx';
 import * as auth from './auth.jsx';
 
-
-
-
-
 function App() {
+
   const [isEditProfilePopupOpen, setEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = React.useState(false);
@@ -34,13 +30,11 @@ function App() {
   const [currentUser, setCurrentUser] = React.useState({});
   const [cards, setCards] = React.useState([]);
 
-
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [isInfoTooltipOpen, setInfoTooltipOpen] = React.useState(false);
   const [isRegistrationSuccess, setRegistrationSuccess] = React.useState(false);
-
-
-
+  const [userData, setUserData] = React.useState(null);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     api.getAllNeededData()
@@ -60,7 +54,6 @@ function App() {
     setEditProfilePopupOpen(false);
     setPopupWithImageOpen(false);
     setDeletePopupOpen(false);
-
     setInfoTooltipOpen(false);
   }
 
@@ -139,20 +132,19 @@ function App() {
       })
   }
 
-
-
-
-
-
-  
   function handleRegistration() {
     setInfoTooltipOpen(true);
   }
   function handleRegisterSubmit(password, email) {
     auth.register(password, email)
       .then((response) => {
+        if (!response.ok) {
+          setRegistrationSuccess(false);
+          return response.json();
+        }
         console.log(response.ok);
         setRegistrationSuccess(response.ok);
+        navigate('/signin');
         return response.json();
       })
       .then((res) => {
@@ -166,35 +158,77 @@ function App() {
       })
   }
 
-
-
-  function handleLogin() {
-    setLoggedIn(true);
+  function handleLogin(password, email) {
+    auth.authorize(password, email)
+      .then((data) => {
+        console.log(data);
+        if (data) {
+          localStorage.setItem('jwt', data.token);
+          setLoggedIn(true);
+          navigate('/', { replace: true });
+          checkToken();
+        }
+      })
+      .catch(err => console.log(err));
   }
 
+  function checkToken() {
+    const jwt = localStorage.getItem('jwt');
+    if (jwt) {
+      console.log(jwt);
+      auth.checkToken(jwt)
+        .then((data) => {
+          console.log(data.data.email);
+          if (!jwt) {
+            console.log('no data');
+            return
+          }
+          setUserData(data);
+          setLoggedIn(true);
+          navigate('/');
+        })
+        .catch(function (value) {
+          setLoggedIn(false);
+          console.log('Ошибка:' + value);
+        })
+    }
+  }
 
+  React.useEffect(() => {
+    checkToken();
+    //eslint-disable-next-line
+  }, []);
 
-
+  function signOut() {
+    localStorage.removeItem('jwt');
+    navigate('/signup');
+    setLoggedIn(false);
+  }
 
   return (
 
-
-
-
-
-
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <BrowserRouter>
 
-          <Header />
+        <Routes>
+          <Route path="/signup" element={
+            <>
+              <Header link="/signin" linkTitle="Войти" />
+              <Register onRegistration={handleRegisterSubmit} />
+            </>
+          } />
 
-          <Routes>
-            <Route path="/" element={loggedIn ? <Navigate to="/main" replace /> : <Navigate to="/signup" replace />} />
-            <Route path="/signup" element={<Register onRegistration={handleRegisterSubmit} />} />
-            <Route path="/login" element={<LogIn handleLogin={handleLogin} />} />
+          <Route path="/signin" element={
+            <>
+              <Header link="/signup" linkTitle="Регистрация" />
+              <LogIn handleLogin={handleLogin} />
+            </>
 
-            <Route path="/main" element={
+          } />
+
+          <Route path="/" element={
+            <>
+              <Header linkTitle="Выйти" userData={userData} onExit={signOut} />
               <ProtectedRouteElement element={Main} loggedIn={loggedIn}
                 onEditProfile={handleEditProfileClick}
                 onAddPlace={handleAddPlaceClick}
@@ -203,30 +237,14 @@ function App() {
                 onCardClick={handleCardClick}
                 onCardLike={handleCardLike}
                 cards={cards} />
+            </>
+          } />
 
-            } />
+          <Route path='*' element={<Navigate to="/signup" replace />} />
 
+        </Routes>
 
-            {/* <Route path="/main" element={
-              <>
-                <Main
-                  onEditProfile={handleEditProfileClick}
-                  onAddPlace={handleAddPlaceClick}
-                  onEditAvatar={handleEditAvatarClick}
-                  onCardDelete={handleDeleteClick}
-                  onCardClick={handleCardClick}
-                  onCardLike={handleCardLike}
-                  cards={cards}
-                />
-
-              </>
-            } /> */}
-
-          </Routes>
-
-          {loggedIn && <Footer />}
-
-        </BrowserRouter >
+        {loggedIn && <Footer />}
 
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
@@ -267,11 +285,6 @@ function App() {
 
       </div>
     </CurrentUserContext.Provider>
-
-
-
-
-
 
   );
 }

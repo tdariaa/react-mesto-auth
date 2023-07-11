@@ -4,8 +4,6 @@ import unionError from '../images/Union-error.svg'
 
 function InfoTooltip(props) {
 
-    console.log(props);
-
     return (
 
         <div className={`popup popup_infoTooltip ${props.isOpen ? 'popup_opened' : ''}`}>

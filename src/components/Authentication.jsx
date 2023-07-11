@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 function Authentication(props) {
-    console.log(props);
+
     return (
         <>
             <div className="auth">
@@ -13,7 +13,7 @@ function Authentication(props) {
                     <button className="auth__button">{props.buttonTitle}</button>
 
                 </form>
-                {props.link && <p className="auth__log-in">Уже зарегистрированы? <Link to="/login" className="auth__log-in_link">Войти</Link></p>}
+                {props.link && <p className="auth__log-in">Уже зарегистрированы? <Link to='/signin' className="auth__log-in_link">Войти</Link></p>}
             </div>
         </>
     )
