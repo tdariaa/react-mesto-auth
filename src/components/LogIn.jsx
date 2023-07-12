@@ -13,8 +13,8 @@ function LogIn(props) {
 
   return (
     <Authentication title="Вход" buttonTitle="Войти" onSubmit={handleSubmit}>
-      <input id="auth__email" className="auth__input auth__input_type_email" placeholder="Email" ref={email} />
-      <input id="auth__password" className="auth__input auth__input_type_password" placeholder="Пароль" type="password" autoComplete="on" ref={password} />
+      <input id="auth__email" className="auth__input auth__input_type_email" placeholder="Email" ref={email} required />
+      <input id="auth__password" className="auth__input auth__input_type_password" placeholder="Пароль" type="password" autoComplete="on" ref={password} required />
     </Authentication>
   )
 }

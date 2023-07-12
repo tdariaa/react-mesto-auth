@@ -120,15 +120,7 @@ class Api {
         .then(this._checkResponse)
     }
   }
-
-
-
-
 }
-
-
-
-
 
 const api = new Api({
   baseUrl: 'https://mesto.nomoreparties.co/v1/cohort-66',

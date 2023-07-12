@@ -4,8 +4,8 @@ import PopupWithForm from './PopupWithForm.jsx';
 
 function AddPlacePopup(props) {
 
-  const [newCard, setNewCard] = React.useState();
-  const [link, setLink] = React.useState();
+  const [newCard, setNewCard] = React.useState('');
+  const [link, setLink] = React.useState('');
 
   React.useEffect(() => {
     setNewCard('');

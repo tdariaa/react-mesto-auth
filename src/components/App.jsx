@@ -34,19 +34,23 @@ function App() {
   const [isInfoTooltipOpen, setInfoTooltipOpen] = React.useState(false);
   const [isRegistrationSuccess, setRegistrationSuccess] = React.useState(false);
   const [userData, setUserData] = React.useState(null);
+  const [registerMassage, setRegisterMassage] = React.useState('');
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    api.getAllNeededData()
-      .then(function (value) {
-        const [cardsInfo, profileInfo] = value;
-        setCurrentUser(profileInfo);
-        setCards(cardsInfo);
-      })
-      .catch(function (value) {
-        console.log('Ошибка:' + value);
-      })
-  }, [])
+    if (loggedIn) {
+      api.getAllNeededData()
+        .then(function (value) {
+          const [cardsInfo, profileInfo] = value;
+          setCurrentUser(profileInfo);
+          setCards(cardsInfo);
+        })
+
+        .catch(function (value) {
+          console.log('Ошибка:' + value);
+        })
+    }
+  }, [loggedIn])
 
   function closeAllPopup() {
     setEditAvatarPopupOpen(false);
@@ -75,11 +79,11 @@ function App() {
     api.deleteCard(selectedCardId)
       .then((value) => {
         setCards(cards.filter((card) => card._id !== selectedCardId));
+        setDeletePopupOpen(false);
       })
       .catch(function (value) {
         console.log('Ошибка:' + value);
       })
-    setDeletePopupOpen(false);
   }
 
   function handleCardClick(cardInfo) {
@@ -137,22 +141,17 @@ function App() {
   }
   function handleRegisterSubmit(password, email) {
     auth.register(password, email)
-      .then((response) => {
-        if (!response.ok) {
-          setRegistrationSuccess(false);
-          return response.json();
-        }
-        setRegistrationSuccess(response.ok);
+      .then((data) => {
+        setRegistrationSuccess(true);
         navigate('/signin');
-        return response.json();
-      })
-      .then((res) => {
+        setRegisterMassage('Вы успешно зарегистрировались!');
         handleRegistration();
-        return res;
       })
       .catch(function (value) {
         setRegistrationSuccess(false);
-        console.log('Ошибка:' + value);
+        setRegisterMassage('Что-то пошло не так! Попробуйте ещё раз.');
+        handleRegistration();
+        console.log(value);
       })
   }
 
@@ -167,7 +166,7 @@ function App() {
         }
       })
       .catch(function (value) {
-        console.log('Ошибка:' + value);
+        console.log(value);
       })
   }
 
@@ -176,9 +175,6 @@ function App() {
     if (jwt) {
       auth.checkToken(jwt)
         .then((data) => {
-          if (!jwt) {
-            return
-          }
           setUserData(data);
           setLoggedIn(true);
           navigate('/');
@@ -236,7 +232,7 @@ function App() {
             </>
           } />
 
-          <Route path='*' element={<Navigate to="/signup" replace />} />
+          <Route path='*' element={<Navigate to="/signin" replace />} />
 
         </Routes>
 
@@ -273,6 +269,7 @@ function App() {
         />
 
         <InfoTooltip
+          title={registerMassage}
           isOpen={isInfoTooltipOpen}
           isSuccess={isRegistrationSuccess}
           onClose={closeAllPopup}
