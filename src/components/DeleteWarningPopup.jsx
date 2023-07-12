@@ -1,7 +1,6 @@
 import React from 'react';
 import PopupWithForm from './PopupWithForm.jsx';
 
-
 function DeleteWarningPopup(props) {
 
   function handleSubmit(e) {

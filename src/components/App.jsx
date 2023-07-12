@@ -16,7 +16,7 @@ import Register from './Register.jsx';
 import LogIn from './LogIn.jsx';
 import ProtectedRouteElement from './ProtectedRoute.jsx';
 import InfoTooltip from './InfoTooltip.jsx';
-import * as auth from './auth.jsx';
+import * as auth from '../utils/auth.js';
 
 function App() {
 
@@ -142,13 +142,11 @@ function App() {
           setRegistrationSuccess(false);
           return response.json();
         }
-        console.log(response.ok);
         setRegistrationSuccess(response.ok);
         navigate('/signin');
         return response.json();
       })
       .then((res) => {
-        console.log(res);
         handleRegistration();
         return res;
       })
@@ -161,7 +159,6 @@ function App() {
   function handleLogin(password, email) {
     auth.authorize(password, email)
       .then((data) => {
-        console.log(data);
         if (data) {
           localStorage.setItem('jwt', data.token);
           setLoggedIn(true);
@@ -169,18 +166,17 @@ function App() {
           checkToken();
         }
       })
-      .catch(err => console.log(err));
+      .catch(function (value) {
+        console.log('Ошибка:' + value);
+      })
   }
 
   function checkToken() {
     const jwt = localStorage.getItem('jwt');
     if (jwt) {
-      console.log(jwt);
       auth.checkToken(jwt)
         .then((data) => {
-          console.log(data.data.email);
           if (!jwt) {
-            console.log('no data');
             return
           }
           setUserData(data);

@@ -4,20 +4,20 @@ import unionError from '../images/Union-error.svg'
 
 function InfoTooltip(props) {
 
-    return (
+  return (
 
-        <div className={`popup popup_infoTooltip ${props.isOpen ? 'popup_opened' : ''}`}>
-            <div className="popup__container popup__container_infoTooltip-container">
+    <div className={`popup popup_infoTooltip ${props.isOpen ? 'popup_opened' : ''}`}>
+      <div className="popup__container popup__container_infoTooltip-container">
 
-                <img src={props.isSuccess ? union : unionError} alt="union label" className="popup__union" />
-                <h2 className="popup__title popup__title_auth">
-                    {props.isSuccess ? 'Вы успешно зарегистрировались!' : 'Что-то пошло не так! Попробуйте ещё раз.'}
-                </h2>
+        <img src={props.isSuccess ? union : unionError} alt="union label" className="popup__union" />
+        <h2 className="popup__title popup__title_auth">
+          {props.isSuccess ? 'Вы успешно зарегистрировались!' : 'Что-то пошло не так! Попробуйте ещё раз.'}
+        </h2>
 
-                <button className="popup__close popup__close_infoTooltip" aria-label="Закрыть" onClick={props.onClose}></button>
-            </div>
-        </div>
-    )
+        <button className="popup__close popup__close_infoTooltip" aria-label="Закрыть" onClick={props.onClose}></button>
+      </div>
+    </div>
+  )
 }
 
 export default InfoTooltip;

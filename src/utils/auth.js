@@ -14,9 +14,10 @@ export const register = (password, email) => {
         .then((res) => {
             return res;
         })
-        .catch((err) => console.log(err));
+        .catch(function (value) {
+            console.log('Ошибка:' + value);
+        })
 };
-
 
 export const authorize = (password, email) => {
     return fetch(`${BASE_URL}/signin`, {
@@ -33,7 +34,9 @@ export const authorize = (password, email) => {
         .then((response) => {
             return response.json();
         })
-        .catch(err => console.log(err))
+        .catch(function (value) {
+            console.log('Ошибка:' + value);
+        })
 };
 
 export const checkToken = (jwt) => {
@@ -51,5 +54,7 @@ export const checkToken = (jwt) => {
         .then((data) => {
             return data;
         })
-        .catch(err => console.log(err))
+        .catch(function (value) {
+            console.log('Ошибка:' + value);
+        })
 };
